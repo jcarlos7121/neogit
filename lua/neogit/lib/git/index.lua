@@ -97,7 +97,17 @@ function M.add(files)
 end
 
 function M.checkout(files)
-  return git.cli.checkout.files(unpack(files)).call { await = true }
+  return git.cli.checkout.files(unpack(files)).call {
+  -- You can use 'cb' or 'on_exit' depending on the underlying implementation
+    cb = function(result)
+      -- Handle result here (result.stdout, result.stderr, etc.)
+      vim.notify(
+        table.concat(result.stdout, "\n"),
+        vim.log.levels.INFO,
+        { title = "Git Checkout Output" }
+      )
+    end
+  }
 end
 
 function M.reset(files)
